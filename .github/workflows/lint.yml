@@ -1,0 +1,11 @@
+name: Lint
+on: [pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Lint evaluation
+        run: docker-compose up --exit-code-from lint lint
