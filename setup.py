@@ -1,14 +1,16 @@
-import setuptools
+from setuptools import find_packages
+from setuptools import setup
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup(
     name="transcriber-wrapper",
     description="A wrapper of well-known translators that transform text into its phonetic transcription",
-    version="1.0.0",
+    version="1.0.1",
     install_requires=[],
-    packages=setuptools.find_packages(),
+    include_package_data=True,
+    packages=find_packages(),
     author="Willian Antunes",
     author_email="willian.lima.antunes@gmail.com",
     license="GPL3",
