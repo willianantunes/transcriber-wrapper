@@ -5,13 +5,9 @@ from transcriber_wrapper.restorer import Restorer
 
 
 def build_transcriber(
-    language: str = "en-us",
-    backend: str = "espeak",
-    preserve_punctuation: bool = False,
-    punctuation_marks: str = Restorer.default_punctuation_marks,
-    with_stress: bool = False,
+    language: str = "en-us", backend: str = "espeak", punctuation_marks: str = Restorer.default_punctuation_marks
 ) -> Transcriber:
     if backend == "espeak":
-        return EspeakNGBackend(language, punctuation_marks, preserve_punctuation, with_stress)
+        return EspeakNGBackend(language, punctuation_marks)
     else:
         raise UnsupportedBackendException

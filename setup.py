@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="transcriber-wrapper",
     description="A wrapper of well-known translators that transform text into its phonetic transcription",
-    version="0.0.1",
+    version="1.0.0",
     install_requires=[],
     packages=setuptools.find_packages(),
     author="Willian Antunes",

@@ -12,8 +12,8 @@ def test_should_raise_exception_given_backend_not_supported():
 def test_transcribe_without_preserve_punctuation_and_stress_scenario_1():
     text_to_be_transcribed = ["Hello", "world!"]
 
-    transcriber = build_transcriber(preserve_punctuation=False, with_stress=False)
-    transcription = transcriber.transcribe(text_to_be_transcribed)
+    transcriber = build_transcriber()
+    transcription = transcriber.transcribe(text_to_be_transcribed, preserve_punctuation=False, with_stress=False)
 
     assert " ".join(transcription) == "həloʊ wɜːld"
 
@@ -21,8 +21,8 @@ def test_transcribe_without_preserve_punctuation_and_stress_scenario_1():
 def test_transcribe_with_preserve_punctuation_and_stress_scenario_1():
     text_to_be_transcribed = ["Hello,", "world!"]
 
-    transcriber = build_transcriber(preserve_punctuation=True, with_stress=True)
-    transcription = transcriber.transcribe(text_to_be_transcribed)
+    transcriber = build_transcriber()
+    transcription = transcriber.transcribe(text_to_be_transcribed, preserve_punctuation=True, with_stress=True)
 
     assert " ".join(transcription) == "həlˈoʊ, wˈɜːld!"
 
@@ -30,7 +30,7 @@ def test_transcribe_with_preserve_punctuation_and_stress_scenario_1():
 def test_transcribe_with_preserve_punctuation_and_without_stress_scenario_1():
     text_to_be_transcribed = ["Hello,", "world!"]
 
-    transcriber = build_transcriber(preserve_punctuation=True, with_stress=False)
-    transcription = transcriber.transcribe(text_to_be_transcribed)
+    transcriber = build_transcriber()
+    transcription = transcriber.transcribe(text_to_be_transcribed, preserve_punctuation=True, with_stress=False)
 
     assert " ".join(transcription) == "həloʊ, wɜːld!"
