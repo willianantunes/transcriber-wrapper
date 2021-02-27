@@ -14,19 +14,16 @@ logger = logging.getLogger(logger_name)
 
 
 class Transcriber(ABC):
-    def __init__(self, language: str, punctuation_marks: str, preserve_punctuation: bool, with_stress: bool):
+    def __init__(self, language: str, punctuation_marks: str):
         self.language = language
-        self.with_stress = with_stress
-        self.preserve_punctuation = preserve_punctuation
-        if self.preserve_punctuation:
-            self.restorer = Restorer(punctuation_marks)
+        self.restorer = Restorer(punctuation_marks)
         self.binary_location = self.discover_binary_location()
 
-    def transcribe(self, words: List[str]) -> List[str]:
+    def transcribe(self, words: List[str], with_stress: bool = False, preserve_punctuation: bool = False) -> List[str]:
         logger.debug(f"Number of words to be transcribed: {len(words)}")
-        transcriptions = [self._retrieve_transcription(word) for word in words]
+        transcriptions = [self._retrieve_transcription(word, with_stress) for word in words]
 
-        if not self.preserve_punctuation:
+        if not preserve_punctuation:
             logger.debug("Not preserving punctuations")
             return transcriptions
 
@@ -49,7 +46,7 @@ class Transcriber(ABC):
     def version(cls):
         pass
 
-    def _retrieve_transcription(self, text):
+    def _retrieve_transcription(self, text: str, with_stress: bool):
         command_as_list = self.build_command(text)
         process = subprocess.Popen(command_as_list, stdout=subprocess.PIPE)
 
@@ -61,14 +58,14 @@ class Transcriber(ABC):
             raise TranscriptionTimeoutException
 
         transcription = outs.decode("utf8")
-        cleaned_transcription = self._clear_transcription(transcription)
+        cleaned_transcription = self._clear_transcription(transcription, with_stress)
 
         return cleaned_transcription
 
-    def _clear_transcription(self, transcription: str) -> str:
+    def _clear_transcription(self, transcription: str, with_stress: bool) -> str:
         transcription = transcription.strip(" \t\r\n")
 
-        if not self.with_stress:
+        if not with_stress:
             transcription = transcription.replace("ˈ", "")
             transcription = transcription.replace("ˌ", "")
             transcription = transcription.replace("'", "")

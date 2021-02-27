@@ -13,8 +13,8 @@ logger = logging.getLogger(logger_name)
 
 
 class EspeakNGBackend(Transcriber):
-    def __init__(self, language: str, punctuation_marks: str, preserve_punctuation: bool, with_stress: bool):
-        super().__init__(language, punctuation_marks, preserve_punctuation, with_stress)
+    def __init__(self, language: str, punctuation_marks: str):
+        super().__init__(language, punctuation_marks)
 
     @staticmethod
     def discover_binary_location():
