@@ -7,3 +7,6 @@ junit
 htmlcov
 .coverage
 coverage.xml
+dist
+build
+*.egg-info
