@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'transcriber_wrapper/**'
+      - 'setup.py'
+
 jobs:
   build-n-publish:
     runs-on: ubuntu-latest
