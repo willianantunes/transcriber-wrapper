@@ -1,5 +1,14 @@
 name: Lint
-on: [pull_request]
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+    paths-ignore:
+      - '**/README.md'
+      - 'scripts/**'
+      - 'sonar-project.properties'
 
 jobs:
   lint:

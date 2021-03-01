@@ -33,20 +33,20 @@ class Transcriber(ABC):
         return transcriptions_with_punctuations
 
     @abstractmethod
-    def build_command(self, word):
+    def build_command(self, word) -> List[str]:
         pass
 
     @staticmethod
     @abstractmethod
-    def discover_binary_location():
+    def discover_binary_location() -> str:
         pass
 
     @classmethod
     @abstractmethod
-    def version(cls):
+    def version(cls) -> str:
         pass
 
-    def _retrieve_transcription(self, text: str, with_stress: bool):
+    def _retrieve_transcription(self, text: str, with_stress: bool) -> str:
         command_as_list = self.build_command(text)
         process = subprocess.Popen(command_as_list, stdout=subprocess.PIPE)
 

@@ -8,6 +8,8 @@ from typing import List
 
 from transcriber_wrapper import logger_name
 from transcriber_wrapper.backends.base import Transcriber
+from transcriber_wrapper.backends.exceps import BinaryNotFoundException
+from transcriber_wrapper.backends.exceps import VersionNotFoundException
 
 logger = logging.getLogger(logger_name)
 
@@ -17,14 +19,16 @@ class EspeakNGBackend(Transcriber):
         super().__init__(language, punctuation_marks)
 
     @staticmethod
-    def discover_binary_location():
+    def discover_binary_location() -> str:
         espeak = distutils.spawn.find_executable("espeak-ng")
         if not espeak:
             espeak = distutils.spawn.find_executable("espeak")
+        if not espeak:
+            raise BinaryNotFoundException
         return espeak
 
     @classmethod
-    def version(cls):
+    def version(cls) -> str:
         espeak_path = cls.discover_binary_location()
         command_list = [espeak_path, "--help"]
         command = shlex.join(command_list)
@@ -35,7 +39,12 @@ class EspeakNGBackend(Transcriber):
         logger.debug(f"Full details: {where_the_version_is_located}")
 
         regex_to_capture_version = r".*: ([0-9]+(\.[0-9]+)+(\-dev)?)"
-        version = re.match(regex_to_capture_version, where_the_version_is_located).group(1)
+        matched_object = re.match(regex_to_capture_version, where_the_version_is_located)
+
+        if not matched_object:
+            raise VersionNotFoundException
+
+        version = matched_object.group(1)
         logger.debug(f"Version: {version}")
 
         return version
@@ -51,7 +60,6 @@ class EspeakNGBackend(Transcriber):
         command_as_list.append(f"-v{self.language}")
         # Write to STDOUT, IPA and quiet options
         command_as_list += ["-x", "--ipa", "-q"]
-        # Other options such as: quiet
 
         logger.debug(f"Command built: {command_as_list}")
 

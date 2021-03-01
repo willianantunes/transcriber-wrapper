@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'transcriber_wrapper/**'
+      - 'setup.py'
+
 jobs:
   build-n-publish:
     runs-on: ubuntu-latest
@@ -21,4 +25,5 @@ jobs:
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
+          skip_existing: true
           password: ${{ secrets.PYPI_API_TOKEN }}
