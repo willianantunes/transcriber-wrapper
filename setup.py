@@ -14,7 +14,7 @@ setup(
     author="Willian Antunes",
     author_email="willian.lima.antunes@gmail.com",
     license="GPL3",
-    keywords="linguistics ipa transcriber phonetics",
+    keywords="linguistics ipa transcriber phonetics pronunciation",
     url="https://github.com/willianantunes/transcriber-wrapper",
     project_urls={
         "Bug Tracker": "https://github.com/willianantunes/transcriber-wrapper/issues",
