@@ -1,6 +1,9 @@
 FROM python:3.9.2-buster
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    festival \
+    festlex-cmu \
+    festlex-poslex \
     espeak-ng && \
     apt-get clean
 
