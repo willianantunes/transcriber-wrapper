@@ -9,8 +9,6 @@ on:
       - '**/README.md'
       - 'scripts/**'
       - 'sonar-project.properties'
-      - '.github/workflows/tests.yml'
-      - '.github/workflows/build-publish.yml'
 
 jobs:
   lint:

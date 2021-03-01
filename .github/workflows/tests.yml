@@ -22,10 +22,13 @@ jobs:
         run: docker-compose up --exit-code-from tests tests
       - name: Workaround to override source path
         run: >
-          sed -i "s/<source>\/app\/transcriber_wrapper<\/source>/<source>\/github\/workspace<\/source>/g" "$GITHUB_WORKSPACE/coverage.xml"
+          sed -i "s/<source>\/app\/transcriber_wrapper<\/source>/<source>\/github\/workspace\/transcriber_wrapper<\/source>/g" "$GITHUB_WORKSPACE/coverage.xml"
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           # Needed to get PR information, if any
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectVersion=$GITHUB_SHA
