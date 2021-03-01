@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - '**/README.md'
       - 'scripts/**'
+      - 'sonar-project.properties'
 
 jobs:
   lint:
