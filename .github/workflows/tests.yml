@@ -20,6 +20,9 @@ jobs:
           fetch-depth: 0
       - name: Execute tests
         run: docker-compose up --exit-code-from tests tests
+      - name: Workaround to override source path
+        run: >
+          sed -i "s/<source>\/app\/transcriber_wrapper<\/source>/<source>\/github\/workspace<\/source>/g" "$GITHUB_WORKSPACE/coverage.xml"
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
