@@ -24,6 +24,19 @@ def do_the_thing(words: List[str]) -> List[str]:
 
 ## Development
 
+### Executing commands directly on the binaries
+
+After building the remote interpreter service, just enter in it:
+
+    docker-compose run remote-interpreter sh
+
+You must be at `/usr/bin/`. Then try one of these below:
+
+```shell
+espeak-ng "Hello my friend, stay awhile and listen!" -ven-us -x --ipa -q --sep=_
+espeak-ng "If you will not bow before a sultan, then you will cower before a sorcerer!" -ven-us -x --ipa -q
+```
+
 ### Updating pipenv dependencies
 
 If you update Pipfile, you can issue the following command to refresh your lock file:
