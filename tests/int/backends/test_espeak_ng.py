@@ -42,7 +42,7 @@ def test_should_raise_exception_given_no_version_was_found(mocker):
 
     regex = r".*: ([0-9]+(\.[0-9]+)+(\-dev)?)"
     target = "eSpeak NG text-to-speech: 1.49.2  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data"
-    mocked_match.called_once_with(regex, target)
+    mocked_match.assert_called_once_with(regex, target)
 
 
 def test_should_build_command_properly_for_en_us():
