@@ -7,6 +7,8 @@ on:
     paths:
       - 'transcriber_wrapper/**'
       - 'setup.py'
+      - 'Pipfile'
+      - 'Pipfile.lock'
 
 jobs:
   build-n-publish:
@@ -32,9 +34,6 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
       - name: Execute tests
         run: docker-compose up --exit-code-from tests tests
-      - name: Workaround to override source path
-        run: >
-          sed -i "s/<source>\/app\/transcriber_wrapper<\/source>/<source>\/github\/workspace\/transcriber_wrapper<\/source>/g" "$GITHUB_WORKSPACE/coverage.xml"
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:

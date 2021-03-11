@@ -10,7 +10,6 @@ pytest-mock = "*"
 pytest-cov = "*"
 black = "*"
 isort = "*"
-tox = "*"
 mypy = "*"
 
 [requires]

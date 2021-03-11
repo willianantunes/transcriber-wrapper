@@ -1,0 +1,14 @@
+[run]
+; https://coverage.readthedocs.io/en/coverage-5.5/config.html?highlight=show_missing#run
+omit =
+    .mypy_cache/*
+    .pytest_cache/*
+    .venv/*
+    .tox/*
+    scripts/*
+    tests/*
+    */tests/*
+
+[report]
+; https://coverage.readthedocs.io/en/coverage-5.5/config.html?highlight=show_missing#report
+show_missing = True
