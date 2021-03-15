@@ -1,25 +1,23 @@
-version: "2.4"
+version: "3.8"
+
+x-build: &dockerfile-dev-build
+  context: .
+  dockerfile: Dockerfile.dev
+
 services:
   remote-interpreter:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    working_dir: /app
+    build: *dockerfile-dev-build
     volumes:
       - .:/app
   tests:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+    build: *dockerfile-dev-build
     working_dir: /app
     volumes:
       - .:/app
-    command: ["./scripts/start-tests.sh"]
+    command: [ "./scripts/start-tests.sh" ]
   lint:
-      build:
-        context: .
-        dockerfile: Dockerfile.dev
-      working_dir: /app
-      volumes:
-        - .:/app
-      command: ["./scripts/start-lint.sh"]
+    build: *dockerfile-dev-build
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: [ "./scripts/start-lint.sh" ]
