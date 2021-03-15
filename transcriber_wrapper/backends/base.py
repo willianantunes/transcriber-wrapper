@@ -19,9 +19,23 @@ class Transcriber(ABC):
         self.restorer = Restorer(punctuation_marks)
         self.binary_location = self.discover_binary_location()
 
-    def transcribe(self, words: List[str], with_stress: bool = False, preserve_punctuation: bool = False) -> List[str]:
+    def transcribe(
+        self,
+        words: List[str],
+        with_stress: bool = False,
+        preserve_punctuation: bool = False,
+        phoneme_separator: str = "",
+    ) -> List[str]:
         logger.debug(f"Number of words to be transcribed: {len(words)}")
-        transcriptions = [self._retrieve_transcription(word, with_stress) for word in words]
+        transcriptions = [self._retrieve_transcription(word, with_stress, phoneme_separator) for word in words]
+
+        logger.debug("Maybe the target back-end has some issues, applying a gambiarra if available...")
+        transcriptions = self.apply_gambiarra(
+            transcriptions,
+            with_stress=with_stress,
+            preserve_punctuation=preserve_punctuation,
+            phoneme_separator=phoneme_separator,
+        )
 
         if not preserve_punctuation:
             logger.debug("Not preserving punctuations")
@@ -33,7 +47,12 @@ class Transcriber(ABC):
         return transcriptions_with_punctuations
 
     @abstractmethod
-    def build_command(self, word) -> List[str]:
+    def build_command(self, word: str, **kwargs) -> List[str]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def apply_gambiarra(transcriptions: List[str], **kwargs) -> List[str]:
         pass
 
     @staticmethod
@@ -46,8 +65,8 @@ class Transcriber(ABC):
     def version(cls) -> str:
         pass
 
-    def _retrieve_transcription(self, text: str, with_stress: bool) -> str:
-        command_as_list = self.build_command(text)
+    def _retrieve_transcription(self, text: str, with_stress: bool, phoneme_separator: str) -> str:
+        command_as_list = self.build_command(text, phoneme_separator=phoneme_separator)
         process = subprocess.Popen(command_as_list, stdout=subprocess.PIPE)
 
         try:

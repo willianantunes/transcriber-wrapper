@@ -34,3 +34,25 @@ def test_transcribe_with_preserve_punctuation_and_without_stress_scenario_1():
     transcription = transcriber.transcribe(text_to_be_transcribed, preserve_punctuation=True, with_stress=False)
 
     assert " ".join(transcription) == "həloʊ, wɜːld!"
+
+
+def test_transcribe_with_preserve_punctuation_and_without_stress_and_separator_scenario_1():
+    text_to_be_transcribed = ["hello,", "world!"]
+
+    transcriber = build_transcriber()
+    extra_options = {"with_stress": False, "preserve_punctuation": True, "phoneme_separator": " "}
+    transcription = transcriber.transcribe(text_to_be_transcribed, **extra_options)
+
+    assert " ".join(transcription) == "h ə l oʊ, w ɜː l d!"
+
+    # This is a buggy example!
+    # Without the gambiarra, you should receive: k j ʊɹ ɹ ɪ  ɔ s ɪ ɾ i
+    text_to_be_transcribed = ["curiosity"]
+    transcription = transcriber.transcribe(text_to_be_transcribed, **extra_options)
+
+    assert " ".join(transcription) == "k j ʊɹ ɹ ɪ ɔ s ɪ ɾ i"
+
+    text_to_be_transcribed = ["something"]
+    transcription = transcriber.transcribe(text_to_be_transcribed, **extra_options)
+
+    assert " ".join(transcription) == "s ʌ m θ ɪ ŋ"

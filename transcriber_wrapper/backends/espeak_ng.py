@@ -49,7 +49,19 @@ class EspeakNGBackend(Transcriber):
 
         return version
 
-    def build_command(self, text) -> List[str]:
+    @staticmethod
+    def apply_gambiarra(transcriptions: List[str], **kwargs) -> List[str]:
+        separator = kwargs.get("phoneme_separator")
+        if separator:
+            # I don't know why, but if you try to use an empty space as the separator for the word curiosity
+            # You may got two spaces, to illustrate: k j ʊɹ ɹ ɪ  ɔ s ɪ ɾ i
+            # This gambiarra is to fix that
+            buggy_separator = f"{separator}{separator}"
+            return [transcription.replace(buggy_separator, separator) for transcription in transcriptions]
+        else:
+            return transcriptions
+
+    def build_command(self, text, **kwargs) -> List[str]:
         # espeak-ng "Hello my friend, stay awhile and listen." -v en-us -x --ipa -q
         command_as_list = []
         # Binary location
@@ -60,6 +72,10 @@ class EspeakNGBackend(Transcriber):
         command_as_list.append(f"-v{self.language}")
         # Write to STDOUT, IPA and quiet options
         command_as_list += ["-x", "--ipa", "-q"]
+        # The character to separate phonemes, if applicable
+        separator = kwargs.get("phoneme_separator")
+        if separator:
+            command_as_list.append(f"--sep={separator}")
 
         logger.debug(f"Command built: {command_as_list}")
 
