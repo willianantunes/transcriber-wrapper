@@ -34,8 +34,14 @@ You must be at `/usr/bin/`. Then try one of these below:
 
 ```shell
 espeak-ng "Hello my friend, stay awhile and listen!" -ven-us -x --ipa -q --sep=_
+espeak-ng "Curiosity" -ven-us -x --ipa -q --sep=" "
 espeak-ng "If you will not bow before a sultan, then you will cower before a sorcerer!" -ven-us -x --ipa -q
 ```
+
+Interesting links:
+
+- [Supported Languages](https://github.com/espeak-ng/espeak-ng/blob/53915bf0a7cd48f90c4a38ac52fff697723d9f4d/docs/languages.md)
+- [Command Line User Guide](https://github.com/espeak-ng/espeak-ng/blob/53915bf0a7cd48f90c4a38ac52fff697723d9f4d/src/espeak-ng.1.ronn)
 
 ### Updating pipenv dependencies
 
