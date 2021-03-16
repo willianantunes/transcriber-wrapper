@@ -18,7 +18,7 @@ def test_must_have_four_methods_or_functions_to_be_implemented():
         if "@abstractmethod" in inspect.getsource(method_object):
             methods_and_functions_to_be_implemented.append(name)
 
-    assert len(methods_and_functions_to_be_implemented) == 4
+    assert len(methods_and_functions_to_be_implemented) == 5
 
 
 def test_should_clean_transcription_without_stress():

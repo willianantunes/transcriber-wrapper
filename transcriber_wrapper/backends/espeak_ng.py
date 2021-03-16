@@ -7,6 +7,7 @@ import subprocess
 from typing import List
 
 from transcriber_wrapper import logger_name
+from transcriber_wrapper.backends.base import CommandDetails
 from transcriber_wrapper.backends.base import Transcriber
 from transcriber_wrapper.backends.exceps import BinaryNotFoundException
 from transcriber_wrapper.backends.exceps import VersionNotFoundException
@@ -61,7 +62,11 @@ class EspeakNGBackend(Transcriber):
         else:
             return transcriptions
 
-    def build_command(self, text, **kwargs) -> List[str]:
+    @classmethod
+    def extract_transcription_from_computed_command(cls, output: bytes) -> str:
+        return output.decode("utf8")
+
+    def build_command(self, text, **kwargs) -> CommandDetails:
         # espeak-ng "Hello my friend, stay awhile and listen." -v en-us -x --ipa -q
         command_as_list = []
         # Binary location
@@ -79,4 +84,4 @@ class EspeakNGBackend(Transcriber):
 
         logger.debug(f"Command built: {command_as_list}")
 
-        return command_as_list
+        return CommandDetails(command_as_list, {})

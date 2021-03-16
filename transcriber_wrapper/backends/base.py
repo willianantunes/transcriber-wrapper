@@ -3,7 +3,9 @@ import subprocess
 
 from abc import ABC
 from abc import abstractmethod
+from dataclasses import dataclass
 from subprocess import TimeoutExpired
+from typing import Dict
 from typing import List
 
 from transcriber_wrapper import logger_name
@@ -11,6 +13,12 @@ from transcriber_wrapper.exceps import TranscriptionTimeoutException
 from transcriber_wrapper.restorer import Restorer
 
 logger = logging.getLogger(logger_name)
+
+
+@dataclass(frozen=True)
+class CommandDetails:
+    commands: List[str]
+    env_variables: Dict[str, str]
 
 
 class Transcriber(ABC):
@@ -47,7 +55,7 @@ class Transcriber(ABC):
         return transcriptions_with_punctuations
 
     @abstractmethod
-    def build_command(self, word: str, **kwargs) -> List[str]:
+    def build_command(self, word: str, **kwargs) -> CommandDetails:
         pass
 
     @staticmethod
@@ -65,9 +73,14 @@ class Transcriber(ABC):
     def version(cls) -> str:
         pass
 
+    @classmethod
+    @abstractmethod
+    def extract_transcription_from_computed_command(cls, output) -> str:
+        pass
+
     def _retrieve_transcription(self, text: str, with_stress: bool, phoneme_separator: str) -> str:
-        command_as_list = self.build_command(text, phoneme_separator=phoneme_separator)
-        process = subprocess.Popen(command_as_list, stdout=subprocess.PIPE)
+        command_details = self.build_command(text, phoneme_separator=phoneme_separator)
+        process = subprocess.Popen(command_details.commands, stdout=subprocess.PIPE, env=command_details.env_variables)
 
         try:
             outs, errs = process.communicate(timeout=15)
@@ -76,7 +89,7 @@ class Transcriber(ABC):
             process.communicate()
             raise TranscriptionTimeoutException
 
-        transcription = outs.decode("utf8")
+        transcription = self.extract_transcription_from_computed_command(outs)
         cleaned_transcription = self._clear_transcription(transcription, with_stress)
 
         return cleaned_transcription
