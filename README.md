@@ -54,3 +54,11 @@ Interesting links:
 If you update Pipfile, you can issue the following command to refresh your lock file:
 
     docker-compose run remote-interpreter pipenv update
+
+If you'd like to add a new package, let's say a production one:
+
+    docker-compose run remote-interpreter pipenv install pyparsing
+
+Don't forget to update your service!
+
+    docker-compose build remote-interpreter
