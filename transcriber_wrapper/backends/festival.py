@@ -7,16 +7,22 @@ import subprocess
 from pathlib import Path
 from typing import List
 
+from pyparsing import OneOrMore
+from pyparsing import ParseResults
+from pyparsing import nestedExpr
+
 from transcriber_wrapper import logger_name
+from transcriber_wrapper.backends.base import CommandDetails
 from transcriber_wrapper.backends.base import Transcriber
 from transcriber_wrapper.backends.exceps import BinaryNotFoundException
 from transcriber_wrapper.backends.exceps import ScriptFileNotFound
 from transcriber_wrapper.backends.exceps import VersionNotFoundException
+from transcriber_wrapper.dealers.InternationalPhoneticAlphabet import InternationalPhoneticAlphabet
 
 logger = logging.getLogger(logger_name)
 
 
-class Festival(Transcriber):
+class FestivalBackend(Transcriber):
     def __init__(self, language: str, punctuation_marks: str):
         super().__init__(language, punctuation_marks)
         base_directory = Path(__file__).resolve().parent.parent.parent
@@ -58,18 +64,63 @@ class Festival(Transcriber):
         logger.debug("No gambiarra implemented for FESTIVAL backend")
         return transcriptions
 
-    def build_command(self, text, **kwargs) -> List[str]:
+    @classmethod
+    def extract_transcription_from_computed_command(cls, output, **kwargs) -> str:
+        output_as_str = output.decode("utf8")
+        logger.debug("Parsing the result of the LISP script")
+        data: ParseResults = OneOrMore(nestedExpr()).parseString(output_as_str)
+        logger.debug("Extracting some details")
+        where_festival_analysis_is = data[0][0].asList()
+        about_the_word = where_festival_analysis_is[0][1]
+        all_syllables = where_festival_analysis_is[1::]
+        logger.debug(f"Details about the word: {about_the_word}")
+        logger.debug(f"All syllables: {all_syllables}")
+        cleaned_syllables = cls._extract_phonemes(all_syllables)
+        # From here, I am supposed to translate the US phoneset to IPA, but how do I do that?
+        # This US phoneset seems different from ARPABET
+        # https://en.m.wikipedia.org/wiki/ARPABET
+        # http://www.festvox.org/bsv/c4711.html
+        cleaned_syllables_as_ipa = [
+            InternationalPhoneticAlphabet.ipa_format_from_us_phone_set(syllable) for syllable in cleaned_syllables
+        ]
+        logger.debug(f"Cleaned syllables as IPA: {cleaned_syllables_as_ipa}")
+        phoneme_separator: str = kwargs.get("phoneme_separator")
+        syllable_separator: str = kwargs.get("syllable_separator")
+        logger.debug(f"Value for phoneme separator: {phoneme_separator}")
+        logger.debug(f"Value for syllable separator: {syllable_separator}")
+        joined_syllables_phonemes = []
+        for syllable in cleaned_syllables_as_ipa:
+            joined_syllable = phoneme_separator.join(syllable)
+            joined_syllables_phonemes.append(joined_syllable)
+        logger.debug(f"After phoneme separator application: {joined_syllables_phonemes}")
+        joined_syllables = syllable_separator.join(joined_syllables_phonemes)
+        logger.debug(f"After phoneme syllable application: {joined_syllables}")
+        return joined_syllables
+
+    def build_command(self, text, **kwargs) -> CommandDetails:
         # My strategy to extract the output from festival is like the following:
         # WORD=something festival -b /app/scripts/festival.lisp
         # WORD=house festival -b /app/scripts/festival.lisp
-        command_as_list = []
-        # The word to be transcribed
-        command_as_list.append(f'WORD="{text}"')
-        # Binary location
-        command_as_list.append(self.binary_location)
-        # Script file that will act as the bridge to communicate with festival
-        command_as_list.append(self.script_file)
+        # Binary location and script file that will act as the bridge to communicate with festival
+        command_as_list = [self.binary_location, self.script_file]
+        env_variables = {"WORD": text}
 
-        logger.debug(f"Command built: {command_as_list}")
+        logger.debug(f"Command built and env variables: {command_as_list} / {env_variables}")
 
-        return command_as_list
+        return CommandDetails(command_as_list, env_variables)
+
+    @classmethod
+    def _extract_phonemes(cls, syllables):
+        logger.debug(f"Number of syllables: {len(syllables)}")
+
+        cleaned_syllables = []
+        for syllable_setup in syllables:
+            where_phonemes_are = syllable_setup[1:]
+            phonemes = []
+            for phoneme_section in where_phonemes_are:
+                dirty_phoneme: str = phoneme_section[0][0]
+                cleaned_phoneme = dirty_phoneme.replace('"', "")
+                phonemes.append(cleaned_phoneme)
+            cleaned_syllables.append(phonemes)
+
+        return cleaned_syllables

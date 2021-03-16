@@ -33,9 +33,12 @@ class Transcriber(ABC):
         with_stress: bool = False,
         preserve_punctuation: bool = False,
         phoneme_separator: str = "",
+        syllable_separator: str = "",
     ) -> List[str]:
         logger.debug(f"Number of words to be transcribed: {len(words)}")
-        transcriptions = [self._retrieve_transcription(word, with_stress, phoneme_separator) for word in words]
+        transcriptions = [
+            self._retrieve_transcription(word, with_stress, phoneme_separator, syllable_separator) for word in words
+        ]
 
         logger.debug("Maybe the target back-end has some issues, applying a gambiarra if available...")
         transcriptions = self.apply_gambiarra(
@@ -75,11 +78,14 @@ class Transcriber(ABC):
 
     @classmethod
     @abstractmethod
-    def extract_transcription_from_computed_command(cls, output) -> str:
+    def extract_transcription_from_computed_command(cls, output, **kwargs) -> str:
         pass
 
-    def _retrieve_transcription(self, text: str, with_stress: bool, phoneme_separator: str) -> str:
-        command_details = self.build_command(text, phoneme_separator=phoneme_separator)
+    def _retrieve_transcription(
+        self, text: str, with_stress: bool, phoneme_separator: str, syllable_separator: str
+    ) -> str:
+        extra_options = {"phoneme_separator": phoneme_separator, "syllable_separator": syllable_separator}
+        command_details = self.build_command(text, **extra_options)
         process = subprocess.Popen(command_details.commands, stdout=subprocess.PIPE, env=command_details.env_variables)
 
         try:
@@ -89,7 +95,7 @@ class Transcriber(ABC):
             process.communicate()
             raise TranscriptionTimeoutException
 
-        transcription = self.extract_transcription_from_computed_command(outs)
+        transcription = self.extract_transcription_from_computed_command(outs, **extra_options)
         cleaned_transcription = self._clear_transcription(transcription, with_stress)
 
         return cleaned_transcription

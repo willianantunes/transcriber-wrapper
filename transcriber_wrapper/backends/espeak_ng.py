@@ -63,7 +63,7 @@ class EspeakNGBackend(Transcriber):
             return transcriptions
 
     @classmethod
-    def extract_transcription_from_computed_command(cls, output: bytes) -> str:
+    def extract_transcription_from_computed_command(cls, output: bytes, **kwargs) -> str:
         return output.decode("utf8")
 
     def build_command(self, text, **kwargs) -> CommandDetails:
