@@ -6,9 +6,14 @@
 
 Inspired by [Phonemizer](https://github.com/bootphon/phonemizer), this a simpler version focused in transcription applications that work with IPA (International Phonetic Alphabet). This works like a wrapper which is responsible to call a back-end application, let's say [espeak-ng](https://github.com/espeak-ng/espeak-ng). It adds some features on top of it like `with stress` option.
 
+## Supported back-ends
+
+- [eSpeakNG](https://en.wikipedia.org/wiki/ESpeak)
+- [Festival Speech Synthesis System](https://en.wikipedia.org/wiki/Festival_Speech_Synthesis_System)
+
 ## Usage
 
-For now, you need to install [espeak-ng](https://github.com/espeak-ng/espeak-ng) on your operational system. See [Dockerfile.dev](./Dockerfile.dev) as an example. After that, you can create a transcriber and then use it in your logic:
+You need to install espeak-ng and festival on your operational system. See [Dockerfile.dev](./Dockerfile.dev) as an example. After that, you can create a transcriber and then use it in your logic:
 
 ```python
 from typing import List
@@ -16,6 +21,7 @@ from typing import List
 import transcriber_wrapper
 
 # The standard language is "en-us"
+# The standard back-end is "espeak"
 transcriber_en_us = transcriber_wrapper.build_transcriber()
 
 def do_the_thing(words: List[str]) -> List[str]:
