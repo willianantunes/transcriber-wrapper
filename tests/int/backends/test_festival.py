@@ -41,4 +41,18 @@ def test_should_raise_exception_given_no_version_was_found(mocker):
     mocked_match.assert_called_once_with(regex, target)
 
 
-# '/usr/bin/festival -b /tmp/tmpnw3b0qok'
+def test_should_instantiate_festival_properly():
+    festival = Festival("en-us", ",!")
+
+    assert festival.script_file.endswith("scripts/festival.lisp")
+
+
+def test_should_build_command_properly_for_en_us():
+    transcriber = Festival("en-us", ",!")
+
+    built_command = transcriber.build_command("jafar")
+
+    assert len(built_command) == 3
+    assert built_command[0] == 'WORD="jafar"'
+    assert built_command[1] == "/usr/bin/festival"
+    assert built_command[2].endswith("scripts/festival.lisp")

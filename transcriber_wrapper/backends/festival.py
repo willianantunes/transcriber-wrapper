@@ -4,11 +4,13 @@ import re
 import shlex
 import subprocess
 
+from pathlib import Path
 from typing import List
 
 from transcriber_wrapper import logger_name
 from transcriber_wrapper.backends.base import Transcriber
 from transcriber_wrapper.backends.exceps import BinaryNotFoundException
+from transcriber_wrapper.backends.exceps import ScriptFileNotFound
 from transcriber_wrapper.backends.exceps import VersionNotFoundException
 
 logger = logging.getLogger(logger_name)
@@ -17,6 +19,10 @@ logger = logging.getLogger(logger_name)
 class Festival(Transcriber):
     def __init__(self, language: str, punctuation_marks: str):
         super().__init__(language, punctuation_marks)
+        base_directory = Path(__file__).resolve().parent.parent.parent
+        self.script_file = f"{base_directory}/scripts/festival.lisp"
+        if not Path(self.script_file).exists():
+            raise ScriptFileNotFound
 
     @staticmethod
     def discover_binary_location() -> str:
@@ -47,19 +53,23 @@ class Festival(Transcriber):
 
         return version
 
-    def build_command(self, text) -> List[str]:
-        pass
-        # # espeak-ng "Hello my friend, stay awhile and listen." -v en-us -x --ipa -q
-        # command_as_list = []
-        # # Binary location
-        # command_as_list.append(self.binary_location)
-        # # Text to be transcribed
-        # command_as_list.append(text)
-        # # Language
-        # command_as_list.append(f"-v{self.language}")
-        # # Write to STDOUT, IPA and quiet options
-        # command_as_list += ["-x", "--ipa", "-q"]
-        #
-        # logger.debug(f"Command built: {command_as_list}")
-        #
-        # return command_as_list
+    @staticmethod
+    def apply_gambiarra(transcriptions: List[str], **kwargs) -> List[str]:
+        logger.debug("No gambiarra implemented for FESTIVAL backend")
+        return transcriptions
+
+    def build_command(self, text, **kwargs) -> List[str]:
+        # My strategy to extract the output from festival is like the following:
+        # WORD=something festival -b /app/scripts/festival.lisp
+        # WORD=house festival -b /app/scripts/festival.lisp
+        command_as_list = []
+        # The word to be transcribed
+        command_as_list.append(f'WORD="{text}"')
+        # Binary location
+        command_as_list.append(self.binary_location)
+        # Script file that will act as the bridge to communicate with festival
+        command_as_list.append(self.script_file)
+
+        logger.debug(f"Command built: {command_as_list}")
+
+        return command_as_list
