@@ -79,13 +79,13 @@ class EspeakNGBackend(Transcriber):
     def extract_transcription_from_computed_command(cls, output: bytes, **kwargs) -> str:
         return output.decode("utf8")
 
-    def build_command(self, text, **kwargs) -> CommandDetails:
+    def build_command(self, word: str, **kwargs) -> CommandDetails:
         # espeak-ng "Hello my friend, stay awhile and listen." -v en-us -x --ipa -q
         command_as_list = []
         # Binary location
         command_as_list.append(self.binary_location)
         # Text to be transcribed
-        command_as_list.append(text)
+        command_as_list.append(word)
         # Language
         command_as_list.append(f"-v{self.language}")
         # Write to STDOUT, IPA and quiet options

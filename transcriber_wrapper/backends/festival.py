@@ -87,8 +87,8 @@ class FestivalBackend(Transcriber):
             InternationalPhoneticAlphabet.ipa_format_from_us_phone_set(syllable) for syllable in cleaned_syllables
         ]
         logger.debug(f"Cleaned syllables as IPA: {cleaned_syllables_as_ipa}")
-        phoneme_separator: str = kwargs.get("phoneme_separator")
-        syllable_separator: str = kwargs.get("syllable_separator")
+        phoneme_separator: str = kwargs["phoneme_separator"]
+        syllable_separator: str = kwargs["syllable_separator"]
         logger.debug(f"Value for phoneme separator: {phoneme_separator}")
         logger.debug(f"Value for syllable separator: {syllable_separator}")
         joined_syllables_phonemes = []
@@ -100,13 +100,13 @@ class FestivalBackend(Transcriber):
         logger.debug(f"After phoneme syllable application: {joined_syllables}")
         return joined_syllables
 
-    def build_command(self, text, **kwargs) -> CommandDetails:
+    def build_command(self, word: str, **kwargs) -> CommandDetails:
         # My strategy to extract the output from festival is like the following:
         # WORD=something festival -b /app/scripts/festival.lisp
         # WORD=house festival -b /app/scripts/festival.lisp
         # Binary location and script file that will act as the bridge to communicate with festival
         command_as_list = [self.binary_location, self.script_file]
-        env_variables = {"WORD": text}
+        env_variables = {"WORD": word}
 
         logger.debug(f"Command built and env variables: {command_as_list} / {env_variables}")
 

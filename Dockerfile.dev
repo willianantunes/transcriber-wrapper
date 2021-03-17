@@ -9,7 +9,7 @@ RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" > /etc/
     echo "deb-src http://deb.debian.org/debian buster-updates main contrib non-free" >> /etc/apt/sources.list
 
 # https://packages.debian.org/search?suite=default&section=all&arch=any&searchon=names&keywords=festlex
-# https://packages.debian.org/search?suite=default&section=all&arch=any&searchon=names&keywords=festlex
+# https://packages.debian.org/search?suite=default&section=all&arch=any&searchon=names&keywords=festival
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     festival \
     festlex-oald \
