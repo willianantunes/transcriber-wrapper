@@ -8,3 +8,7 @@ class VersionNotFoundException(Exception):
 
 class ScriptFileNotFound(Exception):
     pass
+
+
+class LanguageNotSupportedException(Exception):
+    pass

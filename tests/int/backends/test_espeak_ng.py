@@ -32,6 +32,13 @@ def test_should_return_long_version():
     assert espeak_path == "1.49.2"
 
 
+def test_should_support_only_valid_languages():
+    assert EspeakNGBackend.is_language_supported("en-us")
+    assert EspeakNGBackend.is_language_supported("en-gb")
+    assert EspeakNGBackend.is_language_supported("pt-br")
+    assert not EspeakNGBackend.is_language_supported("fake")
+
+
 def test_should_raise_exception_given_no_version_was_found(mocker):
     mocked_re = mocker.patch("transcriber_wrapper.backends.espeak_ng.re")
     mocked_match = mocked_re.match

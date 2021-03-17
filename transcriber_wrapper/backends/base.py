@@ -9,6 +9,7 @@ from typing import Dict
 from typing import List
 
 from transcriber_wrapper import logger_name
+from transcriber_wrapper.backends.exceps import LanguageNotSupportedException
 from transcriber_wrapper.exceps import TranscriptionTimeoutException
 from transcriber_wrapper.restorer import Restorer
 
@@ -23,6 +24,8 @@ class CommandDetails:
 
 class Transcriber(ABC):
     def __init__(self, language: str, punctuation_marks: str):
+        if not self.is_language_supported(language):
+            raise LanguageNotSupportedException
         self.language = language
         self.restorer = Restorer(punctuation_marks)
         self.binary_location = self.discover_binary_location()
@@ -74,6 +77,11 @@ class Transcriber(ABC):
     @classmethod
     @abstractmethod
     def version(cls) -> str:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def is_language_supported(cls, language_tag: str) -> bool:
         pass
 
     @classmethod

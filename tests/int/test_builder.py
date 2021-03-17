@@ -2,6 +2,7 @@ from unittest.case import TestCase
 
 import pytest
 
+from transcriber_wrapper.backends.exceps import LanguageNotSupportedException
 from transcriber_wrapper.builder import build_transcriber
 from transcriber_wrapper.exceps import UnsupportedBackendException
 
@@ -12,6 +13,10 @@ def test_should_raise_exception_given_backend_not_supported():
 
 
 class BuilderWithEspeak(TestCase):
+    def test_should_should_raise_exception_given_the_selected_language_is_not_supported(self):
+        with pytest.raises(LanguageNotSupportedException):
+            build_transcriber(language="elvish")
+
     def test_should_transcribe_without_preserve_punctuation_and_stress_scenario_1(self):
         text_to_be_transcribed = ["Hello", "world!"]
 
@@ -59,6 +64,10 @@ class BuilderWithEspeak(TestCase):
 
 
 class BuilderWithFestival(TestCase):
+    def test_should_should_raise_exception_given_the_selected_language_is_not_supported(self):
+        with pytest.raises(LanguageNotSupportedException):
+            build_transcriber(backend="festival", language="en-gb")
+
     def test_should_transcribe_something(self):
         transcriber = build_transcriber(backend="festival")
 

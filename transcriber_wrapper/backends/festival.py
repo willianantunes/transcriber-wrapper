@@ -1,8 +1,6 @@
 import distutils.spawn
 import logging
 import re
-import shlex
-import subprocess
 
 from pathlib import Path
 from typing import List
@@ -18,11 +16,14 @@ from transcriber_wrapper.backends.exceps import BinaryNotFoundException
 from transcriber_wrapper.backends.exceps import ScriptFileNotFound
 from transcriber_wrapper.backends.exceps import VersionNotFoundException
 from transcriber_wrapper.dealers.InternationalPhoneticAlphabet import InternationalPhoneticAlphabet
+from transcriber_wrapper.support.subprocess_utils import check_output
 
 logger = logging.getLogger(logger_name)
 
 
 class FestivalBackend(Transcriber):
+    supported_languages = ["en-us"]
+
     def __init__(self, language: str, punctuation_marks: str):
         super().__init__(language, punctuation_marks)
         base_directory = Path(__file__).resolve().parent.parent.parent
@@ -41,11 +42,9 @@ class FestivalBackend(Transcriber):
     def version(cls) -> str:
         espeak_path = cls.discover_binary_location()
         command_list = [espeak_path, "--help"]
-        command = shlex.join(command_list)
+        output = check_output(command_list)
 
-        output_as_bytes = subprocess.check_output(command, shell=True)
-        output_as_str = output_as_bytes.decode("utf8")
-        where_the_version_is_located = output_as_str.split("\n")[3]
+        where_the_version_is_located = output.split("\n")[3]
         logger.debug(f"Full details: {where_the_version_is_located}")
 
         regex_to_capture_version = r".* ([0-9\.]+[0-9]):"
@@ -58,6 +57,10 @@ class FestivalBackend(Transcriber):
         logger.debug(f"Version: {version}")
 
         return version
+
+    @classmethod
+    def is_language_supported(cls, language_tag: str) -> bool:
+        return language_tag in cls.supported_languages
 
     @staticmethod
     def apply_gambiarra(transcriptions: List[str], **kwargs) -> List[str]:

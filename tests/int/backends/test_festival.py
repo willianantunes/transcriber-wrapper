@@ -28,6 +28,11 @@ def test_should_return_long_version():
     assert espeak_path == "2.5.0"
 
 
+def test_should_support_only_valid_languages():
+    assert FestivalBackend.is_language_supported("en-us")
+    assert not FestivalBackend.is_language_supported("en-gb")
+
+
 def test_should_raise_exception_given_no_version_was_found(mocker):
     mocked_re = mocker.patch("transcriber_wrapper.backends.festival.re")
     mocked_match = mocked_re.match
