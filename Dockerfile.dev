@@ -1,7 +1,18 @@
 FROM python:3.9.2-buster
 
+# https://wiki.debian.org/SourcesList
+RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list && \
+    echo "deb-src http://deb.debian.org/debian buster main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://deb.debian.org/debian-security/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb-src http://deb.debian.org/debian-security/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://deb.debian.org/debian buster-updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb-src http://deb.debian.org/debian buster-updates main contrib non-free" >> /etc/apt/sources.list
+
+# https://packages.debian.org/search?suite=default&section=all&arch=any&searchon=names&keywords=festlex
+# https://packages.debian.org/search?suite=default&section=all&arch=any&searchon=names&keywords=festlex
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     festival \
+    festlex-oald \
     festlex-cmu \
     festlex-poslex \
     espeak-ng && \
