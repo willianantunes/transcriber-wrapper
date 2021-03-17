@@ -1,5 +1,6 @@
 from transcriber_wrapper.backends.base import Transcriber
 from transcriber_wrapper.backends.espeak_ng import EspeakNGBackend
+from transcriber_wrapper.backends.festival import FestivalBackend
 from transcriber_wrapper.exceps import UnsupportedBackendException
 from transcriber_wrapper.restorer import Restorer
 
@@ -9,5 +10,7 @@ def build_transcriber(
 ) -> Transcriber:
     if backend == "espeak":
         return EspeakNGBackend(language, punctuation_marks)
+    if backend == "festival":
+        return FestivalBackend(language, punctuation_marks)
     else:
         raise UnsupportedBackendException

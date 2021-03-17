@@ -4,3 +4,11 @@ class BinaryNotFoundException(Exception):
 
 class VersionNotFoundException(Exception):
     pass
+
+
+class ScriptFileNotFound(Exception):
+    pass
+
+
+class LanguageNotSupportedException(Exception):
+    pass

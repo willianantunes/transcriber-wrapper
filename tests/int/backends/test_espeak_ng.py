@@ -32,6 +32,13 @@ def test_should_return_long_version():
     assert espeak_path == "1.49.2"
 
 
+def test_should_support_only_valid_languages():
+    assert EspeakNGBackend.is_language_supported("en-us")
+    assert EspeakNGBackend.is_language_supported("en-gb")
+    assert EspeakNGBackend.is_language_supported("pt-br")
+    assert not EspeakNGBackend.is_language_supported("fake")
+
+
 def test_should_raise_exception_given_no_version_was_found(mocker):
     mocked_re = mocker.patch("transcriber_wrapper.backends.espeak_ng.re")
     mocked_match = mocked_re.match
@@ -42,7 +49,7 @@ def test_should_raise_exception_given_no_version_was_found(mocker):
 
     regex = r".*: ([0-9]+(\.[0-9]+)+(\-dev)?)"
     target = "eSpeak NG text-to-speech: 1.49.2  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data"
-    mocked_match.called_once_with(regex, target)
+    mocked_match.assert_called_once_with(regex, target)
 
 
 def test_should_build_command_properly_for_en_us():
@@ -50,7 +57,8 @@ def test_should_build_command_properly_for_en_us():
 
     built_command = transcriber.build_command("jafar")
 
-    assert built_command == ["/usr/bin/espeak-ng", "jafar", f"-v{transcriber.language}", "-x", "--ipa", "-q"]
+    assert built_command.commands == ["/usr/bin/espeak-ng", "jafar", f"-v{transcriber.language}", "-x", "--ipa", "-q"]
+    assert not built_command.env_variables
 
 
 def test_should_build_command_properly_for_en_gb():
@@ -58,7 +66,8 @@ def test_should_build_command_properly_for_en_gb():
 
     built_command = transcriber.build_command("jafar")
 
-    assert built_command == ["/usr/bin/espeak-ng", "jafar", f"-v{transcriber.language}", "-x", "--ipa", "-q"]
+    assert built_command.commands == ["/usr/bin/espeak-ng", "jafar", f"-v{transcriber.language}", "-x", "--ipa", "-q"]
+    assert not built_command.env_variables
 
 
 def test_should_build_command_properly_with_separator():
@@ -68,7 +77,7 @@ def test_should_build_command_properly_with_separator():
     phoneme_separator = " "
     built_command = transcriber.build_command(text, phoneme_separator=phoneme_separator)
 
-    assert built_command == [
+    assert built_command.commands == [
         "/usr/bin/espeak-ng",
         "gambiarra",
         f"-v{transcriber.language}",
@@ -77,3 +86,4 @@ def test_should_build_command_properly_with_separator():
         "-q",
         f"--sep={phoneme_separator}",
     ]
+    assert not built_command.env_variables
