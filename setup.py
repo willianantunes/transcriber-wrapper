@@ -7,10 +7,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="transcriber-wrapper",
     description="A wrapper of well-known translators that transform text into its phonetic transcription",
-    version="1.2.0",
-    install_requires=[],
+    version="1.2.1",
     include_package_data=True,
     packages=find_packages(),
+    install_requires=["pyparsing~=2.4"],
     author="Willian Antunes",
     author_email="willian.lima.antunes@gmail.com",
     license="GPL3",
